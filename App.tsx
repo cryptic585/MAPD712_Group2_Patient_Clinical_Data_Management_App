@@ -7,6 +7,7 @@ import HomeScreen from './HomeScreen';
 import AddPatientScreen from './AddPatientScreen';
 import ViewPatientsScreen from './ViewPatientsScreen'
 import ViewPatientInfoScreen from './ViewPatientInfoScreen'
+import ViewTestInfoScreen from './ViewTestInfoScreen'
 import ViewTestScreen from './ViewTestScreen'
 
 
@@ -108,6 +109,25 @@ function App() {
     ),
   })}
 />
+
+<Stack.Screen
+  name="View Test Info"
+  component={ViewTestInfoScreen}
+  options={({ navigation }) => ({
+    title: 'View Test Info',
+    headerRight: () => (
+      <TouchableOpacity
+        style={{ marginRight: 10 }}
+        onPress={() => {
+          // Handle button press here
+        }}
+      >
+        <Text style={{ color: 'blue' }}>Button</Text>
+      </TouchableOpacity>
+    ),
+  })}
+/>
+
 
 
       </Stack.Navigator>

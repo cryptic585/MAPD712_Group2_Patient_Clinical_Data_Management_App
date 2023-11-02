@@ -63,7 +63,7 @@ const ButtonText = styled.Text`
   text-align: center;
 `;
 
-function ViewPatientInfo({ route, navigation }) {
+function ViewPatientInfoScreen({ route, navigation }) {
   const { selectedPatient } = route.params;
 
   const [isModalVisible, setModalVisible] = useState(false);
@@ -273,7 +273,7 @@ function ViewPatientInfo({ route, navigation }) {
   );
 }
 
-export default ViewPatientInfo;
+export default ViewPatientInfoScreen;
 
 
 const styles = StyleSheet.create({

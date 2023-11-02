@@ -186,10 +186,33 @@ function ViewTestScreen({ route, navigation }) {
 
 
   const handlePressItem = (item) => {
-    navigation.navigate('View Patient Info', { selectedPatient: item });
+    navigation.navigate('View Test Info', { selectedTest: item });
   };
 
   const handleDeletePress = (item) => {
+
+// Add your delete logic here
+      console.log(`Delete pressed for item: ${item._id}`);
+
+    
+      const apiUrl = `https://mapd713-group2-patient-clinical-data.onrender.com/patients/${selectedPatient._id}/tests/${item._id}`;
+      console.log(`Delete pressed for item: ${apiUrl}`);
+
+      // Send a DELETE request using Axios
+       axios
+        .delete(apiUrl)
+        .then((res) => {
+          // Handle the successful response here
+          fetchTests();
+          console.log('Delete request was successful');
+        })
+        .catch((error) => {
+          // Handle errors here
+          console.error('Error deleting item:', error);
+        });
+
+
+
   }
   
 
