@@ -10,7 +10,7 @@ import ViewPatientInfoScreen from './ViewPatientInfoScreen'
 import ViewTestInfoScreen from './ViewTestInfoScreen'
 import ViewTestScreen from './ViewTestScreen'
 
-// Jawwad
+// Jawwad Abbasi
 
 import { enableScreens } from 'react-native-screens'; // Import and enable here
 
