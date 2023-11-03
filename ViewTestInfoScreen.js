@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ScrollView, View, Text, TouchableOpacity, TextInput, StyleSheet, Alert } from 'react-native';
 import { BackHandler } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import Modal from 'react-native-modal';
 import styled from 'styled-components/native';
 import axios from 'axios';
+import { useIsFocused } from '@react-navigation/native';
 
 const Container = styled.View`
   flex: 1;
@@ -73,13 +74,39 @@ function ViewTestInfoScreen({ route, navigation }) {
 
   const [date, setDate] = useState(selectedTest.date);
   const [nurse_name, setNurseName] = useState(selectedTest.nurse_name);
+  const [patient_id, setPatientId] = useState(selectedTest.patient_id);
   const [type, setType] = useState(selectedTest.type);
   const [category, setCategory] = useState(selectedTest.category);
   const [diastolic, setDiastolic] = useState(selectedTest.readings.diastolic);
   const [systolic, setSystolic] = useState(selectedTest.readings.systolic);
 
   const [testData, setTestData] = useState(selectedTest);
+  const isFocused = useIsFocused();
 
+ 
+  useEffect(() => {
+    // Listen for navigation focus and reload data when the component is focused
+    if (isFocused) {
+      fetchSpecificTest();
+    }
+  }, [isFocused]);
+
+  const fetchSpecificTest = () => {
+    
+    const apiUrl = `https://mapd713-group2-patient-clinical-data.onrender.com/patients/${selectedTest.patient_id}/tests/${selectedTest._id}`;
+    
+
+    axios
+      .get(apiUrl)
+      .then((res) => {
+        console.log(res.data);
+        setTestData(res.data);
+        
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  };
 
   
 
@@ -105,18 +132,37 @@ function ViewTestInfoScreen({ route, navigation }) {
       nurse_name: nurse_name,
       type: type,
       category: category,
+      readings:{ 
       diastolic: diastolic,
       systolic: systolic,
+      }
     };
     
     const apiUrl = `https://mapd713-group2-patient-clinical-data.onrender.com/patients/${selectedTest.patient_id}/tests/${selectedTest._id}`;
     console.log(apiUrl)
 
+    if (selectedTest && selectedTest.readings) {
+      data.readings = {
+        diastolic: diastolic,
+        systolic: systolic,
+      };
+    } else {
+      // Handle the case where `selectedTest.readings` is undefined or missing
+      data.readings = {
+        diastolic: diastolic,
+        systolic: systolic,
+      };
+    }
+
     axios
     .patch(apiUrl, data)
     .then((response) => {
       // Handle the successful response here
-      setPatientData(response.data);
+      //setTestData(response.data.tests);
+      //setTestData(response.data.tests[patient_id]);
+      fetchSpecificTest()
+
+      //setRefresh(refresh + 1);
       console.log('Update successful:', response.data);
       toggleModal(); // Close the modal after the update
     })
@@ -169,14 +215,16 @@ function ViewTestInfoScreen({ route, navigation }) {
             <LabelText>Diastolic</LabelText>
           </LabelContainer>
     
-          <Value>{testData.readings.diastolic}</Value>
+        
+          <Value>{testData.readings && testData.readings.diastolic ? testData.readings.diastolic.toString() : 'N/A'}</Value>
         </InfoCard>
         <InfoCard>
           <LabelContainer>
             <LabelText>Systolic</LabelText>
           </LabelContainer>
       
-          <Value>{testData.readings.systolic}</Value>
+          
+          <Value>{testData.readings && testData.readings.systolic ? testData.readings.systolic.toString() : 'N/A'}</Value>
         </InfoCard>
       </ScrollView>
       <ButtonContainer>
@@ -196,7 +244,7 @@ function ViewTestInfoScreen({ route, navigation }) {
       style={styles.textInput}
       //placeholder="Update Full Name"
       //value={selectedPatient.first_name}
-      placeholder={testData.date.toString()}
+      placeholder={testData.date}
       onChangeText={(text) => setDate(text)}
     />
     
@@ -205,7 +253,7 @@ function ViewTestInfoScreen({ route, navigation }) {
       style={styles.textInput}
       //placeholder="Update Last Name"
       //value={selectedPatient.last_name}
-      placeholder={testData.nurse_name.toString()}
+      placeholder={testData.nurse_name}
       onChangeText={(text) => setNurseName(text)}
     />
     <Text style={styles.leftAlign}>Type</Text>
@@ -213,7 +261,7 @@ function ViewTestInfoScreen({ route, navigation }) {
       style={styles.textInput}
       //placeholder="Update Address"
       //value={selectedPatient.address}
-      placeholder={testData.type.toString()}
+      placeholder={testData.type}
       onChangeText={(text) => setType(text)}
     />
     <Text style={styles.leftAlign}>Category</Text>
@@ -221,7 +269,7 @@ function ViewTestInfoScreen({ route, navigation }) {
       style={styles.textInput}
       //placeholder="Update Date Of Birth"
       //value={selectedPatient.date_of_birth}
-      placeholder={testData.category.toString()}
+      placeholder={testData.category}
       onChangeText={(text) => setCategory(text)}
     />
     <Text style={styles.leftAlign}>Diastolic</Text>
@@ -229,7 +277,7 @@ function ViewTestInfoScreen({ route, navigation }) {
       style={styles.textInput}
       //placeholder="Update Department"
       //value={selectedPatient.department}
-      placeholder={testData.readings.diastolic.toString()}
+      placeholder={testData.readings && testData.readings.diastolic ? testData.readings.diastolic.toString() : ''}
       onChangeText={(text) => setDiastolic(text)}
     />
     <Text style={styles.leftAlign}>Systolic</Text>
@@ -237,7 +285,7 @@ function ViewTestInfoScreen({ route, navigation }) {
       style={styles.textInput}
       //placeholder="Update Doctor"
       //value={selectedPatient.doctor}
-      placeholder={testData.readings.systolic.toString()}
+      placeholder={testData.readings && testData.readings.systolic ? testData.readings.systolic.toString() : ''}
       onChangeText={(text) => setSystolic(text)}
     />
 
